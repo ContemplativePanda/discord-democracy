@@ -23,9 +23,9 @@ const congressSize = 3;
 
 const fs = require('fs');
 const termLimitTime = "10m"; // why is this 10m? thought it was 30m
-const congressUpdateTime = "1m"; //should be 30m
+const congressUpdateTime = "10s"; //should be 30m
 const congressCampaigningTime = "1m"; //should be 1m
-const congressVotingTime = "1m";
+const congressVotingTime = "1m"; // should be 1m
 
 const minimumPeachInterval = "5m";
 const minimumPollInterval = "10s";
@@ -321,6 +321,8 @@ function congressCountTheFirst() {
     pollMsg(pollTypes.default, "Congress doesn't have enough people! Begin campaigining, a vote will begin shortly. \nTo submit your name, say '-run4congress'");
     congressInDesperateNeed = true;
 
+    let time = convertTime(congressCampaigningTime);
+    setTimeout(() => { congressPoll(); }, time);
     client.guilds.find("name", serverName).channels.find("name", pollChannelName).send(" ឵឵").then(x => { contendersMsg = x; });
     //if (congressArray.length == 0) { congressCountTheFirst(); } else {
     // setTimeout(() => {
@@ -361,13 +363,13 @@ function runCongress(message, args) {
       }
     }
     if (duplicate == false) {
-      if (congressArray.length < 1) {
-        let time = convertTime(congressCampaigningTime);
-        setTimeout(() => { congressPoll(); }, time);
-      }
+      // if (congressArray.length < 1) {
+      //   let time = convertTime(congressCampaigningTime);
+      //   setTimeout(() => { congressPoll(); }, time);
+      // }
       congressArray.push(name);
       msg(message, "You are now running for Congress!");
-      msg(message, "Use -campaign to give yourself a platform!")
+    //  msg(message, "Use -campaign to give yourself a platform!")
       pollMsg(pollTypes.contender, congressArray.join("\n"));
     //set some time limit to go to vote
     }
@@ -426,6 +428,7 @@ function congressPoll() {
   let msg = "";
   congressArray.map((x,i) => { msg += e[i] + " " + x + "\n"; });
 
+  if (len > 0) {
   pollTypes.vote.title = "New vote!";
   pollMsg(pollTypes.vote, "Voting is beginning. Click on the number corresponding to the candidate you wish to support! \n\n" + msg).then(async newMessage => {
     for (let i = 0; i < len; i++) {
@@ -434,7 +437,7 @@ function congressPoll() {
 
     votingCongressID = newMessage.id;
   });
-
+}
   setTimeout(() => {
     if (congressArray.length == 0) {
       pollTypes.default.title = "Uh oh";
@@ -872,6 +875,9 @@ function congressCount() {
 
   if (congressVoteTallyCountSum < 3) {
     pollMsg(pollTypes.results, "Not enough people voted!");
+    congressArray = [];
+    congressInDesperateNeed = false;
+    votingCongressID = null;
     return;
   }
 
