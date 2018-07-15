@@ -9,32 +9,6 @@ Merijndh
 */
 
 /*
-TO DO LIST
-
-==Bugs==
-- GET ID IS STIll FUCKIED
-- You can currently campaign multiple times
-- The Congress vote only shows 1 name or whichever was last in chat what the fuck (picture in dev chat)
-- Users cant see rich embeds because text and link things are off. must enable them
-- Can campaign with no text after
-- Anyone can give a reason for the poll
-- Can't add colors
-- Sometimes the running for congress stuff stops regular polls
-- Using a "-" in channel create name makes it not work
-- can't do multiple world channel names wtf
-- -help commands isn't updated. replace that documentation with just telling them to do -poll and some info
-
-==Current Development Features==
-- Update documentation to reflect new roles and channels commands
-- Change -poll user add and -poll user remove to somehow include the word 'role'
-
-==Longterm==
-- Possibly do some sort of dynamic timing system based on the number of candidates
-- Bills allowing multiple polls to be passed at once with one vote [In progress]
-- Add "X" aka vote of no confidence option for congress votes
-*/
-
-/*
 Preliminary things
 */
 
@@ -678,7 +652,7 @@ function channel(args) {
     server.createChannel(newName, type);
     return;
   } else if ((args[2] == "delete" || args[2] == "remove") && args.length == 5) {
-    let channelID = args[4];
+    let channelID = args[3];
     channelID = channelID.replace("<","").replace(">","").replace("#","")
     console.debug(channelID);
     server.channels.find("id", channelID).delete();
@@ -723,8 +697,8 @@ function getId(txt) {
     const everyone = client.guilds.find("name", serverName).roles.find("name", "@" + "everyone");
     return everyone;
   }
-  //return txt.replace(/[^0-9.]/g, "").replace("!", "").replace("&", "");
-  return txt.replace("<", "").replace(">", "").replace("!", "").replace("&", "").replace("#", "").replace("@", "");
+  return txt.replace(/[^0-9.]/g, "");
+  //return txt.replace("<", "").replace(">", "").replace("!", "").replace("&", "").replace("#", "").replace("@", "");
 }
 
 let acceptableParamaters = ["MANAGE_CHANNELS", "KICK_MEMBERS"];
@@ -732,7 +706,7 @@ let acceptableParamaters = ["MANAGE_CHANNELS", "KICK_MEMBERS"];
 function user(args) {
   let server = client.guilds.find("name", serverName);
 
-  if (args[2] == "add" && args.length == 5) {
+  if (args[2] == "add" && args.length == 6) {
     let roleID = getId(args[4]);
     let userID = getId(args[3]);
 
@@ -741,7 +715,7 @@ function user(args) {
     member.addRole(role);
 
     return;
-  } else if (args[2] == "remove" && args.length == 5) {
+  } else if (args[2] == "remove" && args.length == 6) {
     let roleID = getId(args[4]);
     let userID = getId(args[3]);
 
@@ -751,6 +725,16 @@ function user(args) {
 
     return;
   }
+}
+
+function hexToRgb(hex)
+{
+    var bytes = [], str;
+
+    for(var i=0; i< hex.length-1; i+=2)
+        bytes.push(parseInt(hex.substr(i, 2), 16));
+
+    return String.fromCharCode.apply(String, bytes);
 }
 
 function role(args) {
@@ -787,7 +771,11 @@ function role(args) {
       console.log([colors.r, colors.g, colors.b]);
       role.edit({color: [colors.r, colors.g, colors.b]});
     } else if (args[3] == "name") {
-      role.edit({name: args[5]});
+      let newRoleName = "";
+      for (let i = 6; i < args.length - 1; i++) {
+        newRoleName += args[i];
+      }
+      role.edit({name: newRoleName});
     } else if (args[3] == "hoist") {
       let value = (args[5] == "true") ? true : false;
       role.edit({hoist: value});
