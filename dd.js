@@ -87,7 +87,7 @@ client.on("message", (message) => {
       if (args[0] == "-say" && (isDev || isBot)) say(message, args);
       if (args[0] == "-congress" && isDev) congressCountTheFirst(message, args);
       if (args[0] == "-run4congress" && !isCongress) runCongress(message, args);
-      //if (args[0] == "-campaign" && !isCongress) campaignCongress(message, args);
+      if (args[0] == "-campaign" && !isCongress) campaignCongress(message, args);
       if (args[0] == "-reason" && isCongress) aa(message, args);
       if (args[0] == "-bill" && isCongress) bill(message, args);
       if ((args[0] == "-poll" && args[1] == "impeach")) poll(message, args);
@@ -369,7 +369,7 @@ function runCongress(message, args) {
       // }
       congressArray.push(name);
       msg(message, "You are now running for Congress!");
-    //  msg(message, "Use -campaign to give yourself a platform!")
+      msg(message, "Use -campaign to give yourself a platform!")
       pollMsg(pollTypes.contender, congressArray.join("\n"));
     //set some time limit to go to vote
     }
@@ -404,7 +404,7 @@ function campaignCongress(message, args) {
     }
 
     for (let i = 0; i < congressArray.length; i++) {
-      if (congressArray[i] = name) {
+      if (congressArray[i] == name) {
         ableToCampaign = true;
       }
     }
@@ -646,6 +646,7 @@ function channel(args) {
 
   if ((args[2] == "add" || args[2] == "create") && args.length >= 5) {
     let newName = "";
+    newName.replace("-", " ");
     for (let i = 3; i < args.length - 1; i++) {
       newName += " " + args[i];
     }
