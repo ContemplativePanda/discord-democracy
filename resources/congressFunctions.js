@@ -72,6 +72,27 @@ function congressPoll() {
     }}, time);
 }
 
+function impeach2(args) {
+  // THIS IS THE CODE THAT WAS ORIGINALLY IN THE POLL FUNCTION
+  //
+  // if (args[1] == "impeach") {
+  //   if (itsPeachy) {
+  //     error(message, "You can't impeach that quickly!");
+  //     return;
+  //   } else if (!itsPeachy) {
+  //     let congressRole = message.guild.roles.find("name", "Congress").id;
+  //     let server = client.guilds.find("name", serverName);
+  //     let userID = getId(args[2]);
+  //     let member = server.members.find("id", userID);
+  //
+  //     if (!member.roles.has(congressRole)) {
+  //       error(message, "This user isn't in congress you idiot.");
+  //       return;
+  //     }
+  //   }
+  // }
+}
+
 function impeach(args) {
   let server = client.guilds.find("name", serverName);
   let roleID = "461667381056634910";

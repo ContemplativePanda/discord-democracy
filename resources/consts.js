@@ -14,7 +14,7 @@ Merijndh
 */
 
 
-const version = "Alpha Build 1.1.02";
+const version = "Alpha Build 1.1.03";
 const welcomeMsg = "Not sure how to start a poll? -poll will guide you every step of the way!"
 
 const serverName = "Discord Democracy";
@@ -33,93 +33,133 @@ const minimumPollDuration = "10s"; //should be 1m
 
 const acceptableParamaters = ["MANAGE_CHANNELS", "KICK_MEMBERS"];
 
+const nonos = [["461667381056634910", "Congress role"],
+               ["462449983350636554", "Congress channel"],
+               ["462449524493778965", "polls channel"],
+               ["461597485266370563", "Developer role"],
+               ["460562933538226176", "Bot role"]];
+
 const commands = {
   "-poll": {
     "user" : {
-      "add" : {
-        end: "@user @role timeLimit",
-        msg: "Polling to give 's3' the role 's4'."
-      },
-      "remove" : {
-        end: "@user @role timeLimit",
-        msg: "Polling to remove the role 's4' from 's3'."
+      "roles" : {
+        "add" : {
+          format: ["user", "role"],
+          end: "@user @role timeLimit",
+          msg: "Polling to give 's4' the role 's5'.",
+          function: userRolesAdd
+        },
+        "remove" : {
+          format: ["user", "role"],
+          end: "@user @role timeLimit",
+          msg: "Polling to remove the role 's5' from 's4'.",
+          function: userRolesRemove
+        }
       }
     },
     "role" : {
         "create" : {
+          format: ["x"],
           end: "roleName timelimit",
-          msg: "Polling to create the role 's3'."
+          msg: "Polling to create the role 's3'.",
+          function: createRole
         },
         "delete" : {
+          format: ["role"],
           end: "@role timeLimit",
-          msg: "Polling to delete the role 's3'."
+          msg: "Polling to delete the role 's3'.",
+          function: deleteRole
         },
         "edit": {
           "permissions" : {
+            format: ["role", "role_parameters"],
             end: "@role parameters timeLimit",
-            msg: "Polling to edit the role 's4' and set its permissions to 's5'."
+            msg: "Polling to edit the role 's4' and set its permissions to 's5'.",
+            function: editRole
           },
           "name" : {
+            format: ["role", "x"],
             end: "@role newName timeLimit",
-            msg: "Polling to edit the name of role 's4' to 's5'."
+            msg: "Polling to edit the name of role 's4' to 's5'.",
+            function: editRole
           },
           "color" : {
+            format: ["role", "color"],
             end: "@role hexColor timeLimit",
-            msg: "Polling to edit the color of role 's4' to 's5'."
+            msg: "Polling to edit the color of role 's4' to 's5'.",
+            function: editRole
           },
           "hoist" : {
+            format: ["role", "bool"],
             end: "@role boolean timeLimit",
-            msg: "Polling to set the hoist of role 's4' to 's5'."
+            msg: "Polling to set the hoist of role 's4' to 's5'.",
+            function: editRole
           }
         }
     },
     "channel" : {
       "create" : {
+        format: ["x", "channel_type"],
         end: "channelName type timeLimit",
-        msg: "Polling to create the channel 's3'."
+        msg: "Polling to create the channel 's3'.",
+        function: createChannel
       },
       "add" : {
+        format: ["x", "channel_type"],
         end: "channelName timeLimit",
-        msg: "Polling to create the channel 's3'."
+        msg: "Polling to create the channel 's3'.",
+        function: createChannel
       },
       "delete" : {
+        format: ["channel"],
         end: "#channel timeLimit",
-        msg: "Polling to remove the channel 's3'."
+        msg: "Polling to remove the channel 's3'.",
+        function: deleteChannel
       },
       "remove" : {
+        format: ["channel"],
         end: "#channel timeLimit",
-        msg: "Polling to remove the channel 's3'."
+        msg: "Polling to remove the channel 's3'.",
+        function: deleteChannel
       },
       "edit" : {
         "name" : {
+          format: ["channel", "x"],
           end: "#channel newName timeLimit",
-          msg: "Polling to rename the channel 's4' to 's5'."
+          msg: "Polling to rename the channel 's4' to 's5'.",
+          function: editChannel
         },
         "topic" : {
+          format: ["channel", "x"],
           end: "#channel NEW TOPIC timeLimit",
-          msg: "Polling to set the topic of channel 's4' to 's5'."
+          msg: "Polling to set the topic of channel 's4' to 's5'.",
+          function: editChannel
         },
         "position" : {
+          format: ["channel", "number"],
           end: "#channel positionNumber timeLimit",
-          msg: "Polling to set the position of channel 's4' to 's5'."
+          msg: "Polling to set the position of channel 's4' to 's5'.",
+          function: editChannel
         },
         "permissions" : {
+          format: ["channel", "role", "role_parameters"],
           end: "#channel @role parameter true/false timeLimit",
-          msg: "Polling to set the 's6' permission of 's5' in channel 's4' to 's7'."
+          msg: "Polling to set the 's6' permission of 's5' in channel 's4' to 's7'.",
+          function: editChannel
         }
       }
     },
     "kick": {
+      format: ["user"],
       end: "@user timeLimit",
-      msg: "Polling to kick the user 's2'"
+      msg: "Polling to kick the user 's2'",
+      function: kick
     },
     "ban": {
-      end: "userID timeLimit",
-      msg: "Polling to ban the user 's2'"
-    },
-    "impeach" : {
+      format: ["user"],
       end: "@user timeLimit",
-      msg: "Polling to remove 's2' from the Congress!"
+      msg: "Polling to ban the user 's2'",
+      function: ban
     }
   }
 }

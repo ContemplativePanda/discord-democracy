@@ -60,7 +60,7 @@ client.on("message", (message) => {
       if (args[0] == "-campaign" && !isCongress) campaignCongress(message, args);
       if (args[0] == "-reason" && isCongress) reason(message, args);
       if (args[0] == "-bill" && isCongress) bill(message, args);
-      if ((args[0] == "-poll" && args[1] == "impeach")) poll(message, args);
+      if ((args[0] == "-poll" && args[1] == "impeach")) impeach2(message, args);
       if ((args[0] == "-poll" && args[1] != "impeach") && isCongress) poll(message, args)
       if (args[0] == "-exec" && isDev) exec(message, args);
       if (args[0] == "-help") help(message, args);

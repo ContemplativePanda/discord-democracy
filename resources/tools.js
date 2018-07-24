@@ -43,22 +43,75 @@ function exec(message, args) {
   }
 }
 
-function isLegitCommand(message, args) {
+function validateCommand(message, args) {
   let cmds = commands;
-  let usedArgs = 0;
   for (let i = 0; i < args.length; i++) {
-    if (cmds[args[i]] != null) {
+    if (cmds[args[i]] != undefined) {
       cmds = cmds[args[i]];
-      usedArgs++;
-      if (Object.getOwnPropertyNames(cmds).includes("end")) {
-        if (usedArgs < args.length) return true;
-        else return false;
+      if (cmds.end != undefined) {
+        if (i < args.length - 1)
+          return {
+            format: cmds.format,
+            msg: cmds.msg,
+            function: cmds.function,
+            index: i+1
+          };
+        break;
       }
     } else {
-      return false;
+      break;
+    }
+  }
+
+  if (cmds.end != undefined) {
+    msg(message, "Complete your command as follows: \n" + args.join(' ') + " " + cmds.end);
+    return false;
+  } else {
+    let availableCommands = Object.getOwnPropertyNames(cmds);
+    let txt = "Type any of these commands next: \n"
+    availableCommands.map(x => { txt += args.join(' ') + " " + x + "\n" });
+    msg(message, txt);
+    return false;
+  }
+}
+
+function validateEnd(commandEnd, args) {
+  for (let i = commandEnd.index; i < args.length; i++) {
+    if (commandEnd.format[i - commandEnd.index] == "user") {
+      if (!checkUser(args[i])) {
+        return "The provided user is invalid.";
+      }
+    }
+    if (commandEnd.format[i - commandEnd.index] == "role") {
+      if (!checkRole(args[i])) {
+        return "The provided role is invalid.";
+      }
+    }
+    if (commandEnd.format[i - commandEnd.index] == "channel") {
+      if (!checkChannel(args[i])) {
+        return "The provided channel is invalid.";
+      }
     }
   }
   return false;
+}
+
+function checkUser(txt) {
+  const id = getId(txt);
+  if (!client.guilds.find("name", serverName).members.find("id", id)) return false;
+  return true;
+}
+
+function checkRole(txt) {
+  const id = getId(txt);
+  if (!client.guilds.find("name", serverName).roles.find("id", id)) return false;
+  return true;
+}
+
+function checkChannel(txt) {
+  const id = getId(txt);
+  if (!client.guilds.find("name", serverName).channels.find("id", id)) return false;
+  return true;
 }
 
 function clearPollChannel() {
